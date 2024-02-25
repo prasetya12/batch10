@@ -1,4 +1,4 @@
-export default function Badge({ active }) {
+export default function Badge({ active, title }) {
   return (
     <>
       <div
@@ -7,7 +7,7 @@ export default function Badge({ active }) {
           active ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-800"
         }`}
       >
-        Smartphone
+        {title}
       </div>
     </>
   );
