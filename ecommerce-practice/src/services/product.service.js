@@ -11,3 +11,8 @@ export const searchDataCall = async (query) => {
     const res = await axios.get(`${BASE_URL}/products/search?q=${query}`)
     return res
 }
+
+export const fetchDataByCategoryCall = async (category) => {
+    const res = await axios.get(`${BASE_URL}/products/category/${category}`)
+    return res
+}

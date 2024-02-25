@@ -3,22 +3,57 @@ import Card from "../components/Card";
 import { BsSearch } from "react-icons/bs";
 import { useEffect, useState } from "react";
 
-import { fetchDataCall, searchDataCall } from "../services/product.service";
+import {
+  fetchDataCall,
+  searchDataCall,
+  fetchDataByCategoryCall,
+} from "../services/product.service";
+import Badge from "../components/Badge";
+
+import { useDispatch } from "react-redux";
+import { getProductCall } from "../store/actions/productAction";
+import ListCard from "../components/ListCard";
 
 export default function HomePages() {
+  const dispatch = useDispatch();
+
   const [dataProducts, setDataProducts] = useState([]);
 
   const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    const data = await fetchDataCall();
-    if (data.data.products) {
-      setIsLoading(false);
-      setDataProducts(data.data.products);
-    }
-  };
+  const [activeMenu, setActiveMenu] = useState("all");
+  const [listMenu, setListMenu] = useState([
+    {
+      label: "All",
+      value: "all",
+    },
+    {
+      label: "Smartphone",
+      value: "smartphones",
+    },
+    {
+      label: "Laptops",
+      value: "laptops",
+    },
+    {
+      label: "Fragrances",
+      value: "fragrances",
+    },
+    {
+      label: "Home Decoration",
+      value: "home-decoration",
+    },
+  ]);
+
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     const data = await fetchDataCall();
+  //     if (data.data.products) {
+  //       setIsLoading(false);
+  //       setDataProducts(data.data.products);
+  //     }
+  //   };
 
   const searchData = async (query) => {
     setIsLoading(true);
@@ -34,6 +69,16 @@ export default function HomePages() {
     // searchData(e.target.value);
   };
 
+  const onClickMenu = async (menu) => {
+    if (menu.value == "all") {
+      fetchData();
+    } else {
+      const data = await fetchDataByCategoryCall(menu.value);
+      setDataProducts(data.data.products);
+    }
+    setActiveMenu(menu.value);
+  };
+
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       searchData(searchValue);
@@ -43,7 +88,8 @@ export default function HomePages() {
   }, [searchValue]);
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
+    dispatch(getProductCall());
   }, []);
 
   return (
@@ -68,13 +114,26 @@ export default function HomePages() {
         </div>
 
         <div className="mt-10">
-          {isLoading ? "Loading..." : <></>}
-          {!isLoading && dataProducts.length == 0 ? "Data Not Found" : <></>}
-          <div className=" grid grid-cols-4 gap-2">
-            {dataProducts.map((item, index) => (
-              <Card product={item} key={index} />
+          {/* LIST MENU CATEGORY */}
+          <div className="flex mb-3 gap-3">
+            {listMenu.map((menu, index) => (
+              <div
+                className="cursor-pointer"
+                key={index}
+                onClick={() => onClickMenu(menu)}
+              >
+                <Badge
+                  title={menu.label}
+                  active={menu.value == activeMenu ? true : false}
+                />
+              </div>
             ))}
           </div>
+
+          <ListCard />
+          {/* {data.map((item, index) => (
+              <Card product={item} key={index} />
+            ))} */}
         </div>
       </div>
     </>
